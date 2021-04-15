@@ -1,0 +1,89 @@
+import numpy as np
+import matplotlib.pyplot as plt
+ 
+ 
+v=5  # velocity
+b=10  #span
+gama0=10
+alfa=5.75
+rho=1.22
+cr=1
+ct=1 # chord
+ 
+ 
+ 
+#integration
+def alfa_ind(yn):
+  def f(y):
+    d_gama=-4*gama0*y/(b**2*(1-(2*y/b)**2)**0.5) 
+    return (d_gama/(4*3.141*v*(yn-y)))       
+ 
+  #input section
+  ll=-4.999
+  ul=5.001
+  n=50
+ 
+ 
+  h=(ul-ll)/n
+  arr=[]
+  for i in range (n+1):
+    k=ll+h*i
+    f(k)
+    arr=np.append(arr,f(k))
+ 
+  m=0
+ 
+  for i in range(1,n):
+    m=m+arr[i]
+ 
+ 
+  I=(h/2)*(float(arr[0])+float(arr[n])+(2*float(m)))
+ 
+  return I
+ 
+ 
+def cl_n(x): # x is  alfa effective
+  a0=2*3.141
+  ar=10
+  e=0.8
+  a=a0/(1+(a0/(3.141*e*ar)))
+  return a*x
+ 
+def cx(x):
+  return (cr-((cr-ct)/(b/2))*x)
+ 
+def gamma_n(x):    #x incremental of span wise lcation
+  return 0.5*v*cx(x)*cl_n(x)
+ 
+def rad(x):    # conv degree to rad
+  return x*3.141/180
+ 
+def deg(x):     #converted into red to degree
+  return x*180/3.141
+ 
+ 
+def gamma_init(yn):
+  return gama0*(1-(2*yn/b)**2)**0.5   #gamma assume 
+ 
+###plotting 
+n=50
+yn=(b/n)
+yy=[]
+xx=[]
+yy1=[]
+yy2=[]
+for yn in np.arange(0,b/2,yn):
+  yy.append (alfa_ind(yn))
+  yy1.append(gamma_init(yn))
+  alfa_eff=alfa-alfa_ind(yn)
+  yy2.append(gamma_n(alfa_eff))
+  xx.append(yn)
+ 
+ 
+ 
+plt.plot(xx,yy,"-o")
+plt.show()
+plt.plot(xx,yy1,"g-")
+plt.show()
+plt.plot(xx,yy2)
+#plt.show()
